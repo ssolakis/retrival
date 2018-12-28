@@ -61,14 +61,32 @@ sub.head()
 print('Total number of question pairs for testing: {}'.format(len(df_test)))
 
 
+qi = pd.DataFrame(list(zip(df_train['qid1'],df_train['question1'])) + list(zip(df_train['qid2'],df_train['question2']))) 
+qi.columns = ['qid','que']   
+bloblist=qi.drop_duplicates(['qid','que'])
+bloblist = bloblist.set_index(['qid'])
+bloblist.sort_values('qid')
 
 
+bloblist.values.astype('U')
 
 
+from sklearn.feature_extraction.text import TfidfVectorizer
 
+tfidf_vectorizer = TfidfVectorizer()
+tfidf_matrix = tfidf_vectorizer.fit_transform(bloblist['que'].values.astype('U'))
 
-
-
+L=[]
+for k in range (len(df_train)):
+    i=df_train.loc[k,'qid1']
+    j=df_train.loc[k,'qid2']
+    
+    from sklearn.metrics.pairwise import cosine_similarity
+    #print ("This is the doc­doc similarity matrix :")
+    ddsim_matrix = cosine_similarity(tfidf_matrix[i-1], tfidf_matrix[j-1])
+    L.append(ddsim_matrix[0][0])
+    print (k)
+df_train.assign(cosine=L)
 
 
 
