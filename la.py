@@ -77,16 +77,21 @@ tfidf_vectorizer = TfidfVectorizer()
 tfidf_matrix = tfidf_vectorizer.fit_transform(bloblist['que'].values.astype('U'))
 
 L=[]
-for k in range (len(df_train)):
+for k in range (1):
     i=df_train.loc[k,'qid1']
+    print(df_train.loc[k,'question1'])
     j=df_train.loc[k,'qid2']
+    print(df_train.loc[k,'question2'])
     
-    from sklearn.metrics.pairwise import cosine_similarity
+    from sklearn.metrics.pairwise import paired_cosine_distances
     #print ("This is the doc­doc similarity matrix :")
-    ddsim_matrix = cosine_similarity(tfidf_matrix[i-1], tfidf_matrix[j-1])
-    L.append(ddsim_matrix[0][0])
+    #ddsim_matrix = cosine_similarity(tfidf_matrix[i-1], tfidf_matrix[j-1])
+    ddsim_matrix=paired_cosine_distances(tfidf_matrix[i-1], tfidf_matrix[j-1])
+    print(ddsim_matrix)
+    L.append(ddsim_matrix)
     print (k)
-df_train.assign(cosine=L)
+I=df_train.assign(cosine=L)
+print(I)
 
 
 
